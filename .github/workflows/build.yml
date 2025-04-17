@@ -24,7 +24,7 @@ jobs:
     - name: Set up Buildroot config
       working-directory: ./buildroot
       run: |
-        make rockpro64_defconfig
+        make BR2_DEFCONFIG=./../configs/rockpro64_custom_defconfig defconfig
 
     - name: Build Buildroot
       working-directory: ./buildroot
