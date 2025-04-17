@@ -1,0 +1,38 @@
+name: Build Buildroot for RockPro64
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        submodules: true  # If using Buildroot as submodule
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential gcc make libncurses-dev bc \
+          unzip git wget python3
+
+    - name: Set up Buildroot config
+      working-directory: ./buildroot
+      run: |
+        make rockpro64_defconfig
+
+    - name: Build Buildroot
+      working-directory: ./buildroot
+      run: |
+        make -j$(nproc)
+
+    - name: Upload SD card image
+      uses: actions/upload-artifact@v4
+      with:
+        name: rockpro64-sdcard
+        path: buildroot/output/images/sdcard.img
